@@ -17,6 +17,7 @@ package handler
 
 import (
 	"bytes"
+	"encoding/base64"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -42,6 +43,7 @@ type ProxyClient struct {
 	HostOverride        string
 	RegionOverride      string
 	LogFailedRequest    bool
+	PlainAuth           string
 }
 
 func (p *ProxyClient) sign(req *http.Request, service *endpoints.ResolvedEndpoint) error {
@@ -54,6 +56,14 @@ func (p *ProxyClient) sign(req *http.Request, service *endpoints.ResolvedEndpoin
 		}
 
 		body = bytes.NewReader(b)
+	}
+
+	if "" != p.PlainAuth {
+		log.Debug("Authenticating with HTTP plain auth")
+
+		encodedCredentials := base64.StdEncoding.EncodeToString([]byte(p.PlainAuth))
+		req.Header.Add("Authorization", fmt.Sprintf("Basic %s", encodedCredentials))
+		return nil
 	}
 
 	var err error
