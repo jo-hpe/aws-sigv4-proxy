@@ -47,6 +47,15 @@ type ProxyClient struct {
 }
 
 func (p *ProxyClient) sign(req *http.Request, service *endpoints.ResolvedEndpoint) error {
+	if "" != p.PlainAuth {
+		log.Debug("Authenticating with HTTP plain auth")
+
+		encodedCredentials := base64.StdEncoding.EncodeToString([]byte(p.PlainAuth))
+		req.Header.Add("Authorization", fmt.Sprintf("Basic %s", encodedCredentials))
+
+		return nil
+	}
+
 	body := bytes.NewReader([]byte{})
 
 	if req.Body != nil {
@@ -56,14 +65,6 @@ func (p *ProxyClient) sign(req *http.Request, service *endpoints.ResolvedEndpoin
 		}
 
 		body = bytes.NewReader(b)
-	}
-
-	if "" != p.PlainAuth {
-		log.Debug("Authenticating with HTTP plain auth")
-
-		encodedCredentials := base64.StdEncoding.EncodeToString([]byte(p.PlainAuth))
-		req.Header.Add("Authorization", fmt.Sprintf("Basic %s", encodedCredentials))
-		return nil
 	}
 
 	var err error
