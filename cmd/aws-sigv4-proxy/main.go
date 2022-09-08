@@ -39,6 +39,7 @@ var (
 	logFailedResponse      = kingpin.Flag("log-failed-requests", "Log 4xx and 5xx response body").Bool()
 	logSinging             = kingpin.Flag("log-signing-process", "Log sigv4 signing process").Bool()
 	plainAuth              = kingpin.Flag("user-pass", "Use HTTP Plain Auth with these credentials (like curl -u)").Short('u').String()
+	useHttp                = kingpin.Flag("http", "Use HTTP instead of HTTPS").Bool()
 	port                   = kingpin.Flag("port", "Port to serve http on").Default(":8080").String()
 	strip                  = kingpin.Flag("strip", "Headers to strip from incoming request").Short('s').Strings()
 	roleArn                = kingpin.Flag("role-arn", "Amazon Resource Name (ARN) of the role to assume").String()
@@ -123,6 +124,7 @@ func main() {
 				StripRequestHeaders: *strip,
 				SigningNameOverride: *signingNameOverride,
 				HostOverride:        *hostOverride,
+				UseHttp:             *useHttp,
 				RegionOverride:      *regionOverride,
 				LogFailedRequest:    *logFailedResponse,
 				PlainAuth:           *plainAuth,

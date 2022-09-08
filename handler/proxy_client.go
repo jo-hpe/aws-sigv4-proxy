@@ -41,6 +41,7 @@ type ProxyClient struct {
 	StripRequestHeaders []string
 	SigningNameOverride string
 	HostOverride        string
+	UseHttp             bool
 	RegionOverride      string
 	LogFailedRequest    bool
 	PlainAuth           string
@@ -105,7 +106,11 @@ func (p *ProxyClient) Do(req *http.Request) (*http.Response, error) {
 	} else {
 		proxyURL.Host = req.Host
 	}
-	proxyURL.Scheme = "https"
+	if p.UseHttp {
+		proxyURL.Scheme = "http"
+	} else {
+		proxyURL.Scheme = "https"
+	}
 
 	if log.GetLevel() == log.DebugLevel {
 		initialReqDump, err := httputil.DumpRequest(req, true)
